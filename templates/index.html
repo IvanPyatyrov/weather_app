@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#city').on('input', function() {
+                var query = $(this).val();
+                if (query.length > 2) {
+                    $.ajax({
+                        url: '/autocomplete',
+                        data: { q: query },
+                        success: function(data) {
+                            $('#suggestions').empty();
+                            data.forEach(function(item) {
+                                $('#suggestions').append('<option value="' + item + '">');
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <form method="POST">
+        <input type="text" id="city" name="city" placeholder="Enter city name" list="suggestions" required>
+        <datalist id="suggestions"></datalist>
+        <button type="submit">Get Weather</button>
+    </form>
+    {% if weather %}
+    <h2>Current Weather</h2>
+    <p>Temperature: {{ weather['current_weather']['temperature'] }}°C</p>
+    {% endif %}
+    <h2>Search History</h2>
+    <ul>
+        {% for item in history %}
+        <li>{{ item.city }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
